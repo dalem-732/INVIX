@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
-import Script from "next/script";
-import "xp.css/dist/XP.css";
+import "xp.css";
 import { TelegramBootstrap } from "./telegram";
 import "./globals.css";
 
@@ -12,7 +11,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="ru">
       <body>
-        <Script src="https://telegram.org/js/telegram-web-app.js" strategy="beforeInteractive" />
         <TelegramBootstrap />
         {children}
       </body>

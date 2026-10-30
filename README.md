@@ -33,6 +33,14 @@ docker compose up -d --build --scale api=2 --scale bot=2 --scale web=2
 
 Пока `PUBLIC_BASE_URL` пустой, сообщения забирает одна реплика бота. Остальные ждут и подхватывают опрос, если она остановится. С публичным HTTPS бот принимает вебхук, и Nginx раздаёт его по всем репликам.
 
+## Railway
+
+`docker-compose.yml` на Railway не запускается. В одном проекте нужны сервисы `postgres`, `minio`, `api`, `web`, `bot` и `nginx`. Публичный домен только у `nginx`, порт 80. Root Directory: `/backend`, `/frontend`, `/bot`, `/nginx`.
+
+Перед первым запуском API выполните `postgres/init.sql` в Query у PostgreSQL. `DATABASE_URL` берите из Postgres; если схема `postgres://`, замените её на `postgresql://`.
+
+У `api` и `bot` один и тот же `BOT_SECRET`. У `web` переменная `API_URL=http://api.railway.internal:8000`. У бота `API_URL=http://api.railway.internal:8000`, `WEBAPP_URL` и `PUBLIC_BASE_URL` равны `https://<домен nginx>` без слэша на конце. `MINIO_ENDPOINT=minio.railway.internal:9000`.
+
 ## Создание товара
 
 В боте администратор нажимает «Создать товар» или отправляет `/create`, затем одним сообщением присылает фотографию и название в подписи.

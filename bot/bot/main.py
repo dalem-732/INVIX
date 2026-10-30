@@ -131,7 +131,7 @@ async def health(_: web.Request) -> web.Response:
 def run_health_only() -> None:
     app = web.Application()
     app.router.add_get("/health", health)
-    web.run_app(app, host="0.0.0.0", port=8080)
+    web.run_app(app, host="::", port=8080)
 
 
 def start_health_server() -> None:
@@ -151,7 +151,14 @@ def start_health_server() -> None:
         def log_message(self, format: str, *args: object) -> None:
             return
 
-    server = ThreadingHTTPServer(("0.0.0.0", 8080), Handler)
+    class DualStackServer(ThreadingHTTPServer):
+        address_family = socket.AF_INET6
+
+        def server_bind(self) -> None:
+            self.socket.setsockopt(socket.IPPROTO_IPV6, socket.IPV6_V6ONLY, 0)
+            super().server_bind()
+
+    server = DualStackServer(("::", 8080), Handler)
     threading.Thread(target=server.serve_forever, daemon=True).start()
 
 
@@ -244,7 +251,7 @@ def main() -> None:
         secret_token=settings.bot_secret,
     ).register(app, path="/webhook")
     setup_application(app, dispatcher, bot=bot)
-    web.run_app(app, host="0.0.0.0", port=8080)
+    web.run_app(app, host="::", port=8080)
 
 
 if __name__ == "__main__":
